@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator/check');
+const { check, validationResult } = require('express-validator');
+
+const User = require('../../models/user');
 
 // @route    POST api/users
 // @desc     Test route
@@ -12,15 +14,25 @@ router.post(
         check('email', '!email').isEmail(),
         check('password', '!password').isLength({min: 6})
     ],
-    (req,resp) => {
+    async (req,resp) => {
         const errors = validationResult(req);
         if(!errors.isEmpty()) {
             return resp.status(400).json({ errors: errors.array() });
         }
 
         const { name, email, password } = req.body;
-        console.log(req.body);
-        resp.send(`User's route`);
+        try {
+            let user = User.findOne({ email });
+
+            if (user) {
+                resp.status(400).json({errors: [{ msg: 'User already exists' }]})
+            }
+            console.log(req.body);
+            resp.send(`User's route`);
+        } catch(err) {
+            console.log('users error - ', err);
+            resp.status(500).send('Server error');
+        }
     }
 );
 
