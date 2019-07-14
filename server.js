@@ -7,10 +7,13 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// main page
 app.get( '/', (req, res) => res.send('<h1 style="font-family: `Ekibastuz`">Server started, cool!</h1>') )
 
+// middleware added
 app.use(express.json({extended: false}));
 
+// routes
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/profile', require('./routes/api/profile'));
